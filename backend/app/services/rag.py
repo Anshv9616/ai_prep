@@ -1,54 +1,12 @@
 
 
-
-# from transformers import pipeline
-
-# # client=genai.Client(api_key="AIzaSyA9eu7X7M5P9eg5-zaJ0j1nH2V8CI1xHY8")
-
-# generator=pipeline("text-generation",model="gpt2")
-
-
-# def generate_answer(query: str, chunks: list[str]):
-#     def clean_text(text):
-#         text = text.replace("\n", " ")
-#         text = text.replace("|", " ")
-#         return text.strip()
-
-#     clean_chunks = [clean_text(c) for c in chunks[:3]]
-#     context = " ".join(clean_chunks)
-
-#     prompt = f"""
-# You are a resume assistant.
-
-# Answer ONLY using the context.
-# Give a short clear answer.
-
-# Context:
-# {context}
-
-# Question:
-# {query}
-
-# Answer:
-# """
-
-#     result = generator(
-#         prompt,
-#         max_new_tokens=80,
-#         do_sample=False
-#     )
-
-#     output = result[0]["generated_text"]
-
-#     return output.split("Answer:")[-1].strip()
-
-
-
-
-
 from groq import Groq
 import json
-client = Groq(api_key="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")
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
  # your client
