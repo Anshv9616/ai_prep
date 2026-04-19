@@ -3,7 +3,14 @@ import redis
 import hashlib
 from app.models.interview import InterViewQuestion
 from app.services.evaluate import get_ai_feedback
-redis_client=redis.Redis(host="localhost",port=6379,decode_responses=True)
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+redis_client = redis.from_url(
+    os.getenv("REDIS_URL", "redis://localhost:6379"),
+    decode_responses=True
+)
 
 def get_question_cached(question_id, session_id, user_id, db):
     cache_key = f"question:{user_id}:{session_id}:{question_id}"

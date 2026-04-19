@@ -3,7 +3,7 @@ from app.services.chunker import chunk_text
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 import shutil
-import os
+
 from PyPDF2 import PdfReader
 from app.db.database import SessionLocal
 from app.models.resume import Resume
@@ -23,8 +23,13 @@ import uuid
 import redis
 from app.services.cache import get_question_cached,get_ai_feedback_cached
 from dotenv import load_dotenv
+import os
 load_dotenv()
 
+redis_client = redis.from_url(
+    os.getenv("REDIS_URL", "redis://localhost:6379"),
+    decode_responses=True
+)
 
 router=APIRouter(prefix="/interview",tags=["interview"])
 
@@ -80,7 +85,7 @@ def generate(topic:str="general",db: Session = Depends(get_db), current_user: Us
     }
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-redis_client = redis.Redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
+
 @router.post("/evaluate-audio/{session_id}/{question_id}")
 async def evaluate_and_save_audio_answer(
     question_id: int,
