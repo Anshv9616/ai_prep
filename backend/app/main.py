@@ -16,7 +16,8 @@ from contextlib import asynccontextmanager
 app = FastAPI()
 ml_models={}
 origins = [
-    "http://localhost:3000",  # React frontend
+    "http://localhost:3000", 
+    "https://ai-prep-murex.vercel.app" # React frontend
 ]
 app.add_middleware(
     CORSMiddleware,
