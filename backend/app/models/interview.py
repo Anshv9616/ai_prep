@@ -3,6 +3,7 @@ from sqlalchemy import Column,Integer,ForeignKey,Text,DateTime,String,Float
 from sqlalchemy.sql import func
 from uuid import uuid4
 from sqlalchemy.orm import relationship
+from datetime import datetime
 class InterViewQuestion(Base):
     __tablename__ = "interview_question"
 
@@ -16,7 +17,7 @@ class InterViewQuestion(Base):
     ai_feedback   = Column(Text,    nullable=True)
     score         = Column(Float,   nullable=True)
     topic         = Column(String,  nullable=True)
-    created_at    = Column(DateTime, server_default=func.now())
+    created_at    = Column(DateTime, default=datetime.utcnow)
 
     session = relationship("InterviewSession", back_populates="questions")
 

@@ -65,7 +65,9 @@ export default function History() {
                 className={`grid grid-cols-[1fr_120px_80px_100px_110px_80px] gap-4 px-5 py-4 items-center border-b border-border/50 hover:bg-white/3 transition-all duration-200 cursor-pointer animate-fade-up stagger-${(i % 5) + 1} group`}
                 onClick={() => navigate(`/session/${s.session_id}`)}>
                 <p className="text-sm font-semibold text-white group-hover:text-accent-light transition-colors">{s.topic}</p>
-                <p className="text-sm text-white/40">{new Date(s.date).toLocaleDateString()}</p>
+                <p className="text-sm text-white/40">{s.date 
+  ? new Date(s.date).toLocaleDateString() 
+  : new Date().toLocaleDateString()}</p>
                 <p className="text-sm text-white/40 font-mono">{s.progress}</p>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full border w-fit ${scoreColor(s.avg_score)}`}>
                   {s.avg_score}/10

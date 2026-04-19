@@ -105,7 +105,7 @@ export default function Dashboard() {
                   className={`glass rounded-xl px-5 py-4 flex items-center justify-between cursor-pointer card-hover animate-fade-up stagger-${(i % 6) + 1} group`}>
                   <div>
                     <p className="text-sm font-semibold text-white group-hover:text-accent-light transition-colors">{s.topic}</p>
-                    <p className="text-xs text-white/30 mt-0.5">{new Date(s.date).toLocaleDateString()}</p>
+                    <p className="text-xs text-white/30 mt-0.5">{s.date ? new Date(s.date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-white/30">{s.progress}</span>

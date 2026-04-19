@@ -3,7 +3,7 @@ from app.services.chunker import chunk_text
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 import shutil
-
+from datetime import datetime
 from PyPDF2 import PdfReader
 from app.db.database import SessionLocal
 from app.models.resume import Resume
@@ -14,7 +14,7 @@ from app.services.search import search_chunks
 from app.services.generate_interview import generate_interview
 from app.models.interview import InterViewQuestion
 from app.services.rag import generate_answer
-from app.models.interview import InterViewQuestion
+from app.models.interview import InterViewQuestion,InterviewSession
 from app.services.evaluate import get_ai_feedback
 from groq import Groq
 import asyncio
@@ -49,35 +49,41 @@ def get_db():
 
 
 @router.get("/generate")
-def generate(topic:str="general",db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    
-    search_query=f"{topic} and technical implementation"
+def generate(topic: str = "general", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    search_query = f"{topic} and technical implementation"
     res = search_chunks(search_query, db, user_id=current_user.id)
     session_id = str(uuid.uuid4())
-   
-    if not res:
-        raise HTTPException(
-            status_code=404, 
-            detail="No resume chunks found. Please upload a resume first."
-        )
 
-    
+    if not res:
+        raise HTTPException(status_code=404, detail="No resume chunks found. Please upload a resume first.")
+
     chunks = [r.content for r in res]
-    
     resume = db.query(Resume).filter(Resume.user_id == current_user.id).first()
-    questions_data = generate_interview(chunks,topic=topic)
-    for q_text in questions_data["questions"]:
-     new_q = InterViewQuestion(
+    questions_data = generate_interview(chunks, topic=topic)
+
+   
+    new_session = InterviewSession(
+        id=session_id,
         user_id=current_user.id,
-        resume_id=resume.id,
         topic=topic,
-        session_id=session_id,
-        question_text=q_text
-     )
-     db.add(new_q)
+        created_at=datetime.utcnow()
+    )
+    db.add(new_session)
+    db.flush() 
+
+    for q_text in questions_data["questions"]:
+        new_q = InterViewQuestion(
+            user_id=current_user.id,
+            resume_id=resume.id,
+            topic=topic,
+            session_id=session_id,
+            question_text=q_text,
+            created_at=datetime.utcnow()
+        )
+        db.add(new_q)
 
     db.commit()
-    
+
     return {
         "user_id": current_user.id,
         "session_id": session_id,
