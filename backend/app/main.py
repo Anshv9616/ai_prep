@@ -5,6 +5,8 @@ from app.db.database import engine, Base
 from app.models import user, resume, chunks
 from app.routers import auth, resume, interview
 from app.core.deps import get_current_user
+from fastapi import  Request
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -22,6 +24,18 @@ app.add_middleware(
     expose_headers=["*"],
     max_age=3600,
 )
+
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(rest_of_path: str, request: Request):
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
+            "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS, PUT, PATCH",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 app.include_router(auth.router)
 app.include_router(resume.router)
