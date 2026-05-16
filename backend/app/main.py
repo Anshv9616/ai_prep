@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
 from app.models import user, resume, chunks
-from sqlalchemy import tex
+from sqlalchemy import text
 from app.routers import auth, resume, interview
 from app.core.deps import get_current_user
 from fastapi import  Request
