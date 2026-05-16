@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
 from app.models import user, resume, chunks
+from sqlalchemy import tex
 from app.routers import auth, resume, interview
 from app.core.deps import get_current_user
 from fastapi import  Request
@@ -40,7 +41,9 @@ async def preflight_handler(rest_of_path: str, request: Request):
 app.include_router(auth.router)
 app.include_router(resume.router)
 app.include_router(interview.router)
-
+with engine.connect() as connection:
+    connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+    connection.commit()
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
